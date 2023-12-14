@@ -1,0 +1,236 @@
+openapi: 3.0.3
+info:
+  title: Device Manager API
+  description: "API for managing devices and users in an inventory system."
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000
+tags:
+  - name: devices
+    description: Operations with devices
+  - name: users
+    description: Operations with users
+paths:
+  /devices:
+    get:
+      tags:
+        - devices
+      summary: Gets information about all devices
+      operationId: getDevices
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/devices'
+    post:
+      tags:
+        - devices
+      summary: Registers a new device
+      description: Registers a new device
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/device'
+      responses:
+        '201':
+          description: Successful operation
+        '400':
+          description: Bad request
+  /devices/{deviceId}:
+    get:
+      tags:
+        - devices
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/device'
+        '404':
+          description: Device not found
+    put:
+      tags:
+        - devices
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update an existing device in the inventory
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/device'
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: Device not found
+    delete:
+      tags:
+        - devices
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: Device not found
+  /devices/{deviceId}/user:
+    put:
+      tags:
+        - devices
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Assign a device to a user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user'
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: Device not found or user not found
+    delete:
+      tags:
+        - devices
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: Device not found or user not found
+  /devices/{deviceId}/photo:
+    put:
+      tags:
+        - devices
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update device photo
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                photo:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: No photo provided or device not found
+    get:
+      tags:
+        - devices
+      summary: Gets the photo of a device
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Device not found or photo not available
+  /users:
+    get:
+      tags:
+        - users
+      summary: Gets information about all users
+      operationId: getUsers
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/users'
+    post:
+      tags:
+        - users
+      summary: Registers a new user
+      description: Registers a new user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user'
+      responses:
+        '201':
+          description: Successful operation
+        '400':
+          description: Bad request
+  
+components:
+  schemas:
+    device:
+      type: object
+      properties:
+        deviceId:
+          type: string
+        deviceName:
+          type: string
+        description:
+          type: string
+        serialNumber:
+          type: string
+        manufacturer:
+          type: string
+        assignedUser:
+          type: string
+    devices:
+      type: array
+      items:
+        $ref: '#/components/schemas/device'
+    user:
+      type: object
+      properties:
+        userId:
+          type: string
+        userName:
+          type: string
+    users:
+      type: array
+      items:
+        $ref: '#/components/schemas/user'
+
